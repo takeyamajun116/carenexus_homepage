@@ -3,671 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CareNexus | Medical Reg-Tech Infrastructure</title>
-    <meta name="description" content="CareNexusは、在宅医療・訪問看護における記録・監査・経営のトリレンマを解消する医療Reg-Techインフラです。現場の直感を確かな証跡へ変換します。">
+    <title>CareNexus | Governance Infrastructure for Home Healthcare</title>
+    <meta name="description" content="CareNexusは、在宅医療・訪問看護領域における「記録・監査・報酬」の不整合を構造的に解決する医療Reg-Techインフラです。">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
-        /* --- CSS Variables & Reset --- */
+        /* --- 1. Design Tokens & Variables --- */
         :root {
-            /* Colors */
-            --c-primary: #0B1E3B; /* Deep Midnight Blue */
-            --c-primary-dark: #050E1F;
-            --c-accent: #0D9488; /* Signal Teal */
-            --c-accent-hover: #115E59;
-            --c-bg: #F8FAFC; /* Slate 50 */
-            --c-surface: #FFFFFF;
-            --c-text-main: #0F172A; /* Slate 900 */
-            --c-text-muted: #64748B; /* Slate 500 */
-            --c-border: #E2E8F0;
+            /* Palette: Institutional Trust */
+            --c-navy-dark: #0F172A;   /* Primary Background */
+            --c-navy-light: #1E293B;  /* Secondary Background */
+            --c-text-white: #F8FAFC;  /* Main Text on Dark */
+            --c-text-gray: #94A3B8;   /* Muted Text */
+            --c-accent: #0F766E;      /* Teal: Medical Intelligence (Not bright green) */
+            --c-border: #334155;      /* Subtle Borders */
             
             /* Typography */
-            --font-main: 'Noto Sans JP', sans-serif;
+            --font-sans: 'Noto Sans JP', sans-serif;
             --font-serif: 'Noto Serif JP', serif;
             --font-mono: 'Roboto Mono', monospace;
-
+            
             /* Spacing */
-            --container-width: 1100px;
-            --header-height: 80px;
+            --container-w: 1080px;
+            --section-padding: 120px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        /* --- 2. Base Reset & Typography --- */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
-            font-family: var(--font-main);
-            background-color: var(--c-bg);
-            color: var(--c-text-main);
+            background-color: var(--c-navy-dark);
+            color: var(--c-text-white);
+            font-family: var(--font-sans);
             line-height: 1.8;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
 
-        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 500; letter-spacing: 0.05em; }
+        p { color: var(--c-text-gray); font-size: 15px; letter-spacing: 0.02em; }
+        
+        a { text-decoration: none; color: inherit; transition: opacity 0.3s; }
         ul { list-style: none; }
 
-        /* --- Utility Classes --- */
-        .container {
-            max-width: var(--container-width);
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-        
+        /* Utility Classes */
+        .container { max-width: var(--container-w); margin: 0 auto; padding: 0 24px; }
+        .mono { font-family: var(--font-mono); letter-spacing: 0.05em; font-size: 0.85em; text-transform: uppercase; }
+        .accent { color: var(--c-accent); }
         .text-center { text-align: center; }
-        .text-serif { font-family: var(--font-serif); }
-        .text-mono { font-family: var(--font-mono); font-size: 0.9em; letter-spacing: 0.05em; }
+        .flex { display: flex; }
+        .grid { display: grid; }
         
-        .section-padding { padding: 100px 0; }
+        /* --- 3. Components --- */
         
+        /* Buttons: Minimal & Sharp */
         .btn {
             display: inline-block;
             padding: 14px 32px;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            border: 1px solid transparent;
+            border: 1px solid var(--c-border);
+            background: transparent;
+            color: var(--c-text-white);
+            font-family: var(--font-mono);
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: var(--c-primary);
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: var(--c-accent);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border-color: var(--c-primary);
-            color: var(--c-primary);
-        }
-        .btn-outline:hover {
-            background-color: var(--c-primary);
-            color: white;
-        }
-
-        /* --- Header --- */
-        .header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: var(--header-height);
-            background: rgba(248, 250, 252, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--c-border);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-        }
-
-        .header-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
-        .logo {
-            font-family: var(--font-mono);
-            font-weight: 700;
-            font-size: 20px;
-            color: var(--c-primary);
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .logo::before {
-            content: '';
-            display: block;
-            width: 12px;
-            height: 12px;
-            background: var(--c-accent);
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 32px;
-        }
-
-        .nav-link {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--c-text-muted);
             position: relative;
-        }
-        .nav-link:hover { color: var(--c-primary); }
-
-        /* --- Hero Section --- */
-        .hero {
-            position: relative;
-            height: 100vh;
-            min-height: 700px;
-            background-color: var(--c-primary);
-            color: white;
-            display: flex;
-            align-items: center;
             overflow: hidden;
         }
+        .btn:hover { background: var(--c-text-white); color: var(--c-navy-dark); }
+        .btn-primary { background: var(--c-accent); border-color: var(--c-accent); }
+        .btn-primary:hover { background: #115E59; color: white; }
 
-        /* Abstract Grid Background */
-        .hero-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: 1;
-        }
-        .hero-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 70% 30%, rgba(13, 148, 136, 0.15), transparent 60%);
-            z-index: 2;
-        }
+        /* Section Headers */
+        .sec-head { margin-bottom: 60px; border-left: 2px solid var(--c-accent); padding-left: 24px; }
+        .sec-label { display: block; color: var(--c-accent); margin-bottom: 12px; }
+        .sec-title { font-size: 32px; margin-bottom: 16px; }
 
-        .hero-content {
+        /* --- 4. Layout Structure --- */
+
+        /* Header */
+        header {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--c-border);
+        }
+        .nav-inner { height: 70px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: var(--font-serif); font-size: 20px; font-weight: 700; letter-spacing: 0.05em; }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { font-size: 13px; color: var(--c-text-gray); font-family: var(--font-mono); }
+        .nav-links a:hover { color: white; }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh; min-height: 700px;
+            display: flex; align-items: center;
             position: relative;
-            z-index: 10;
-            max-width: 800px;
+            background: 
+                linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)),
+                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(148, 163, 184, 0.05) 50px),
+                repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(148, 163, 184, 0.05) 50px);
+            background-size: cover;
         }
+        .hero-content { position: relative; z-index: 10; width: 100%; }
+        .tagline { margin-bottom: 24px; display: block; color: var(--c-accent); }
+        .hero h1 { font-size: clamp(36px, 5vw, 64px); line-height: 1.2; margin-bottom: 32px; }
+        .hero-sub { max-width: 600px; margin-bottom: 48px; font-size: 16px; line-height: 2; border-left: 1px solid var(--c-text-gray); padding-left: 24px; }
 
-        .tagline {
-            font-family: var(--font-mono);
-            color: var(--c-accent);
-            margin-bottom: 24px;
-            display: block;
-            font-size: 14px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
+        /* Introduction (Why Now) */
+        .intro { padding: var(--section-padding) 0; background: var(--c-navy-light); }
+        .intro-grid { grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+        .stat-num { font-size: 48px; font-family: var(--font-serif); color: var(--c-accent); display: block; margin-bottom: 8px; }
+        .stat-label { font-size: 13px; color: var(--c-text-gray); }
 
-        .hero-title {
-            font-family: var(--font-serif);
-            font-size: clamp(32px, 5vw, 56px);
-            line-height: 1.2;
-            margin-bottom: 32px;
-            font-weight: 600;
+        /* The Problem (Reg-Tech View) */
+        .problem { padding: var(--section-padding) 0; }
+        .trilemma { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+        .card { 
+            border: 1px solid var(--c-border); padding: 32px; 
+            transition: 0.3s; background: rgba(255,255,255,0.02);
         }
+        .card:hover { border-color: var(--c-accent); transform: translateY(-5px); }
+        .card h3 { font-size: 18px; margin-bottom: 16px; color: white; }
+        .card p { font-size: 14px; }
 
-        .hero-desc {
-            font-size: 16px;
-            color: #CBD5E1;
-            margin-bottom: 48px;
-            max-width: 600px;
-            line-height: 2;
+        /* Solution (The Product) */
+        .solution { padding: var(--section-padding) 0; background: linear-gradient(to right, #0F172A, #0a1120); border-top: 1px solid var(--c-border); }
+        .os-concept { 
+            display: grid; grid-template-columns: 1.5fr 1fr; gap: 60px; 
+            align-items: center; margin-top: 60px;
         }
-
-        .hero-actions {
-            display: flex;
-            gap: 16px;
+        .feature-list li { 
+            padding: 24px 0; border-bottom: 1px solid var(--c-border); 
+            display: grid; grid-template-columns: 40px 1fr;
         }
-
-        /* --- Philosophy Section --- */
-        .philosophy {
-            background: white;
-        }
+        .f-num { font-family: var(--font-mono); color: var(--c-accent); }
+        .f-content h4 { font-size: 18px; margin-bottom: 8px; color: white; }
         
-        .section-header {
-            margin-bottom: 60px;
-        }
-        
-        .section-label {
-            font-family: var(--font-mono);
-            color: var(--c-accent);
-            font-size: 12px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-            display: block;
-        }
-        
-        .section-title {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--c-primary);
-            line-height: 1.4;
-        }
+        /* Governance & Human-in-the-loop */
+        .governance { padding: var(--section-padding) 0; background: #E2E8F0; color: var(--c-navy-dark); }
+        .governance h2, .governance h3, .governance h4 { color: var(--c-navy-dark); }
+        .governance p { color: #475569; }
+        .governance .sec-head { border-left-color: var(--c-navy-dark); }
+        .governance .sec-label { color: var(--c-navy-dark); opacity: 0.6; }
 
-        .philosophy-text {
-            font-family: var(--font-serif);
-            font-size: 18px;
-            line-height: 2.2;
-            max-width: 800px;
-            margin: 0 auto;
-            border-left: 2px solid var(--c-accent);
-            padding-left: 40px;
+        .diagram {
+            border: 1px solid #CBD5E1; background: white; padding: 40px; margin-top: 40px;
+            display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: center; text-align: center;
         }
+        .diagram-box { padding: 20px; background: #F1F5F9; border: 1px solid #CBD5E1; font-family: var(--font-mono); font-size: 13px; font-weight: 700; }
+        .arrow { font-size: 20px; color: #94A3B8; }
 
-        /* --- Problem (Paradox) --- */
-        .problem-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 32px;
-        }
-
-        .problem-card {
-            background: white;
-            padding: 40px;
-            border: 1px solid var(--c-border);
-            border-top: 3px solid var(--c-text-muted);
-            transition: 0.3s;
-        }
-        .problem-card:hover {
-            border-top-color: var(--c-primary);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-        
-        .card-icon {
-            font-family: var(--font-mono);
-            font-size: 24px;
-            color: var(--c-text-muted);
-            margin-bottom: 24px;
-            display: block;
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--c-primary);
-        }
-
-        .card-text {
-            font-size: 15px;
-            color: var(--c-text-muted);
-            line-height: 1.8;
-        }
-
-        /* --- Solution (Product) --- */
-        .solution {
-            background-color: var(--c-primary);
-            color: white;
-            position: relative;
-        }
-        
-        .solution .section-title { color: white; }
-        .solution .section-label { color: var(--c-accent); }
-        .solution .section-desc { color: #94A3B8; margin-top: 16px; }
-
-        .feature-list {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 60px;
-            margin-top: 60px;
-        }
-
-        .feature-item {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 40px;
-            align-items: start;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 40px;
-        }
-        
-        .feature-meta {
-            font-family: var(--font-mono);
-        }
-        .feature-num {
-            font-size: 48px;
-            color: rgba(255,255,255,0.1);
-            display: block;
-            line-height: 1;
-            margin-bottom: 16px;
-        }
-        .feature-name {
-            color: var(--c-accent);
-            font-size: 14px;
-            letter-spacing: 0.1em;
-        }
-
-        .feature-content h3 {
-            font-size: 24px;
-            margin-bottom: 16px;
-        }
-        .feature-content p {
-            color: #CBD5E1;
-            font-size: 15px;
-        }
-
-        /* --- Governance (Human in the loop) --- */
-        .governance {
-            background-color: var(--c-bg);
-            border-top: 1px solid var(--c-border);
-        }
-
-        .gov-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
-
-        .gov-visual {
-            background: white;
-            border: 1px solid var(--c-border);
-            padding: 40px;
-            position: relative;
-        }
-        /* Pseudo-UI elements with CSS */
-        .ui-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            background: #DEF7EC;
-            color: #03543F;
-            font-size: 11px;
-            font-weight: 700;
-            font-family: var(--font-mono);
-            border-radius: 2px;
-            margin-bottom: 16px;
-        }
-        .ui-line {
-            height: 1px;
-            background: var(--c-border);
-            margin: 16px 0;
-            position: relative;
-        }
-        .ui-line::after {
-            content: '';
-            position: absolute;
-            left: 0; top: -2px;
-            width: 40%;
-            height: 5px;
-            background: var(--c-primary);
-        }
-        .ui-text {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--c-text-muted);
-            margin-bottom: 8px;
-        }
-
-        /* --- Footer --- */
-        .footer {
-            background-color: var(--c-primary-dark);
-            color: white;
-            padding: 80px 0 40px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 60px;
-        }
-
-        .footer-info h4 {
-            font-family: var(--font-mono);
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .footer-info h4::before {
-            content: ''; width: 10px; height: 10px; background: var(--c-accent); display: block;
-        }
-        
-        .footer-links h5 {
-            font-size: 14px;
-            color: var(--c-text-muted);
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-        .footer-links li { margin-bottom: 12px; }
-        .footer-links a { font-size: 14px; color: #94A3B8; }
-        .footer-links a:hover { color: white; }
-
-        .copyright {
-            text-align: center;
-            font-size: 12px;
-            color: rgba(255,255,255,0.3);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding-top: 30px;
-            font-family: var(--font-mono);
-        }
+        /* Footer */
+        footer { border-top: 1px solid var(--c-border); padding: 80px 0 40px; background: var(--c-navy-dark); }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 60px; }
+        .company-meta { font-size: 13px; color: var(--c-text-gray); margin-top: 24px; line-height: 1.6; }
 
         /* Animation Classes */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .hero-title { font-size: 32px; }
-            .feature-item { grid-template-columns: 1fr; }
-            .gov-layout { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr; }
-            .nav-menu { display: none; } /* Simplified mobile handling */
+            .hero h1 { font-size: 32px; }
+            .intro-grid, .trilemma, .os-concept, .diagram, .footer-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; } /* Simplified for demo */
+            .diagram { gap: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div class="container header-inner">
+    <header>
+        <div class="container nav-inner">
             <a href="#" class="logo">CareNexus</a>
-            <nav>
-                <ul class="nav-menu">
-                    <li><a href="#philosophy" class="nav-link">Philosophy</a></li>
-                    <li><a href="#problem" class="nav-link">Problem</a></li>
-                    <li><a href="#solution" class="nav-link">Solution</a></li>
-                    <li><a href="#governance" class="nav-link">Governance</a></li>
-                    <li><a href="#" class="nav-link">Company</a></li>
-                </ul>
+            <nav class="nav-links">
+                <a href="#philosophy">Philosophy</a>
+                <a href="#problem">The Problem</a>
+                <a href="#solution">Solution</a>
+                <a href="#governance">Governance</a>
+                <a href="#contact">Contact</a>
             </nav>
-            <a href="#contact" class="btn btn-primary" style="padding: 10px 20px; font-size: 13px;">お問い合わせ</a>
+            <a href="#contact" class="btn btn-primary" style="padding: 10px 20px;">お問い合わせ</a>
         </div>
     </header>
 
     <section class="hero">
-        <div class="hero-bg"></div>
-        <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <span class="tagline reveal">Orchestrating Trust in Home Healthcare.</span>
-            <h1 class="hero-title reveal" style="transition-delay: 0.1s;">
-                現場の直感を、<br>確かな証跡へ。
+            <span class="tagline mono reveal">Governance for Distributed Care</span>
+            <h1 class="reveal" style="transition-delay: 0.1s;">
+                地域医療の直感を、<br>
+                確かな証跡へ。
             </h1>
-            <p class="hero-desc reveal" style="transition-delay: 0.2s;">
-                在宅医療・訪問看護経営における最大のリスクは、「見えない時間」に埋没するケアの記録と、複雑化する報酬制度の乖離にあります。<br>
-                CareNexusは、臨床の文脈を解析し、制度適合性を担保する医療Reg-Techインフラ。現場が本来のケアに集中するために、経営と監査の基盤を再構築します。
+            <p class="hero-sub reveal" style="transition-delay: 0.2s;">
+                医療制度の複雑性と、現場の不確実性。<br>
+                CareNexusは、その狭間にある「リスク」を構造化し、<br>
+                在宅医療経営を監査・コンプライアンスの脅威から解放する<br>
+                次世代のReg-Techインフラです。
             </p>
-            <div class="hero-actions reveal" style="transition-delay: 0.3s;">
-                <a href="#" class="btn btn-primary" style="background:var(--c-accent); border-color:var(--c-accent);">事業概要書 (PDF)</a>
-                <a href="#contact" class="btn btn-outline" style="color:white; border-color:white;">お問い合わせ</a>
+            <div class="reveal" style="transition-delay: 0.3s;">
+                <a href="#contact" class="btn">会社案内・資料ダウンロード</a>
             </div>
         </div>
     </section>
 
-    <section id="philosophy" class="section-padding philosophy">
-        <div class="container">
-            <div class="text-center section-header reveal">
-                <span class="section-label">Why Now</span>
-                <h2 class="section-title">制度改正が突きつける<br>「質」への転換</h2>
-            </div>
-            <div class="philosophy-text reveal">
+    <section id="philosophy" class="intro">
+        <div class="container intro-grid">
+            <div class="reveal">
+                <span class="mono accent">WHY NOW</span>
+                <h2 style="font-size: 28px; margin: 20px 0;">制度は「実施」の評価から<br>「プロセス」の検証へ。</h2>
                 <p>
-                    2024年のトリプル改定以降、医療・介護現場に求められるのは「実施したことの証明」から「成果とプロセスの透明化」へとシフトしました。もはや、人力による記録の整合性維持と、複雑な加算算定の並立は限界を迎えています。<br><br>
-                    私たちは、テクノロジーを単なる「効率化」のためだけではなく、「コンプライアンス（法令遵守）」と「サステナビリティ（事業継続性）」のために実装します。
+                    2024年の診療報酬・介護報酬トリプル改定以降、医療現場に求められるのは「ケアをした事実」だけでなく、「なぜそのケアが必要で、どう実施し、どんな成果が出たか」という論理的整合性の証明です。<br><br>
+                    もはや、個人の記憶と努力に依存した記録業務では、実地指導や監査における説明責任を果たせないフェーズに突入しています。
+                </p>
+            </div>
+            <div class="reveal" style="transition-delay: 0.2s;">
+                <div style="border-top: 1px solid var(--c-border); padding-top: 20px; margin-bottom: 30px;">
+                    <span class="stat-num">800<span style="font-size:20px;">万時間/年</span></span>
+                    <span class="stat-label">国内訪問看護における「記録・請求」の推定総損失時間</span>
+                </div>
+                <div style="border-top: 1px solid var(--c-border); padding-top: 20px;">
+                    <span class="stat-num">Non-Audit<span style="font-size:20px;">Risk</span></span>
+                    <span class="stat-label">記録不整合による返戻・指導対象リスクの顕在化</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="problem" class="problem">
+        <div class="container">
+            <div class="sec-head reveal">
+                <span class="sec-label mono">THE STRUCTURAL PROBLEM</span>
+                <h2 class="sec-title">在宅医療経営のトリレンマ</h2>
+                <p>以下の3つは、従来トレードオフの関係にありました。</p>
+            </div>
+            
+            <div class="trilemma">
+                <div class="card reveal">
+                    <span class="mono accent">01 QUALITY</span>
+                    <h3>臨床の質</h3>
+                    <p>目の前の患者に向き合う時間を最大化したいが、記録業務がそれを圧迫する現実。</p>
+                </div>
+                <div class="card reveal" style="transition-delay: 0.1s;">
+                    <span class="mono accent">02 COMPLIANCE</span>
+                    <h3>制度適合性</h3>
+                    <p>複雑怪奇な加算要件を遵守し、監査に耐えうる記録を残さなければならない重圧。</p>
+                </div>
+                <div class="card reveal" style="transition-delay: 0.2s;">
+                    <span class="mono accent">03 SUSTAINABILITY</span>
+                    <h3>経営の持続性</h3>
+                    <p>適正な収益（請求）を確保しなければ、地域医療を支える組織そのものが維持できない。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="solution" class="solution">
+        <div class="container">
+            <div class="sec-head reveal">
+                <span class="sec-label mono">OUR SOLUTION</span>
+                <h2 class="sec-title">CareNexus AI :<br>The Clinical Governance OS</h2>
+                <p>現場の「行動」を、制度上の「正解」へリアルタイムに変換する。</p>
+            </div>
+
+            <div class="os-concept">
+                <div class="reveal">
+                    <ul class="feature-list">
+                        <li>
+                            <div class="f-num">01</div>
+                            <div class="f-content">
+                                <h4>Regulatory Navigation / 制度ナビゲーション</h4>
+                                <p>訪問中の会話やバイタルデータから、算定可能な項目をリアルタイムで示唆。取りこぼしを防ぐだけでなく、算定要件を満たさない過剰請求リスク（コンプライアンス違反）を未然にブロックします。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="f-num">02</div>
+                            <div class="f-content">
+                                <h4>Evidence Structuring / 証跡の構造化</h4>
+                                <p>「なんとなく書いた日報」を、監査証跡として有効な「構造化データ」へ自動変換。GPS情報、時刻、ケア内容を紐づけ、改ざん不可能なログとして保存します。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="f-num">03</div>
+                            <div class="f-content">
+                                <h4>Non-Destructive Integration / 非破壊的統合</h4>
+                                <p>既存のレセコンや電子カルテをリプレイスする必要はありません。CareNexusはガバナンス層として既存システムの上にレイヤーされ、API連携によりシームレスに動作します。</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="reveal text-center" style="border: 1px solid var(--c-border); padding: 40px; background: rgba(15,23,42,0.5);">
+                    <div style="font-family: var(--font-mono); font-size: 12px; color: var(--c-accent); margin-bottom: 20px;">SYSTEM STATUS: AUDIT READY</div>
+                    <div style="height: 1px; background: var(--c-border); margin: 20px 0;"></div>
+                    <div style="text-align: left; font-family: var(--font-mono); font-size: 11px; line-height: 2;">
+                        > Input: Voice Log (Nurse A)<br>
+                        > Analysis: Context Matching...<br>
+                        > Regulatory Check: Pattern B-2<br>
+                        > Alert: Missing Vital Data<br>
+                        > Action: Prompt User<br>
+                        <span style="color: var(--c-accent);">> Status: Verified by Human</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="governance" class="governance">
+        <div class="container">
+            <div class="sec-head reveal">
+                <span class="sec-label mono">PHILOSOPHY & STANCE</span>
+                <h2 class="sec-title">We Keep Humans in the Loop.</h2>
+                <h3 style="font-size: 18px; margin-top: 10px; color: #64748B;">AIは判断しない。提案するだけである。</h3>
+            </div>
+
+            <div class="reveal">
+                <p style="max-width: 800px; margin-bottom: 40px;">
+                    医療・ヘルスケア領域において、AIによる「完全自動化」は責任の所在を曖昧にします。<br>
+                    CareNexusの設計思想は、医療者の専門性を代替することではありません。<br>
+                    AIはあくまでドラフト（下書き）とリスク検知を行い、最終的な記録の確定と請求判断は、必ず有資格者の「承認（Sign-off）」を経て実行されます。
+                </p>
+
+                <div class="diagram">
+                    <div class="diagram-box">
+                        AI Analysis<br>
+                        <span style="font-weight:400; font-size:11px; color:#64748B;">ドラフト作成・リスク検知</span>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="diagram-box" style="border-color: var(--c-navy-dark); background: white;">
+                        Human Decision<br>
+                        <span style="font-weight:400; font-size:11px; color:#64748B;">専門職による確認・承認</span>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="diagram-box">
+                        Official Record<br>
+                        <span style="font-weight:400; font-size:11px; color:#64748B;">法的効力のある記録</span>
+                    </div>
+                </div>
+                <p style="font-size: 13px; text-align: center; margin-top: 20px; color: #64748B;">
+                    このプロセスを経ることで、万が一の医療訴訟や監査においても、<br>
+                    「誰が判断したか」というトレーサビリティ（追跡可能性）を完全に担保します。
                 </p>
             </div>
         </div>
     </section>
 
-    <section id="problem" class="section-padding" style="background:white;">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-label">The Regulatory Paradox</span>
-                <h2 class="section-title">経営を圧迫する3つのリスク</h2>
-                <p style="color:var(--c-text-muted); margin-top:10px;">訪問看護経営者が直面する構造的な課題</p>
-            </div>
-            <div class="problem-grid">
-                <div class="problem-card reveal">
-                    <span class="card-icon">01 / Documentation</span>
-                    <h3 class="card-title">記録のブラックボックス化</h3>
-                    <p class="card-text">
-                        訪問中のケア内容と、事後の記録作成にタイムラグが発生。記憶に依存した記録は、実地指導時の監査リスクに直結します。
-                    </p>
-                </div>
-                <div class="problem-card reveal" style="transition-delay: 0.1s;">
-                    <span class="card-icon">02 / Compliance</span>
-                    <h3 class="card-title">算定要件の複雑化</h3>
-                    <p class="card-text">
-                        頻繁な制度改正により、適切な加算算定の判断が属人化。過少請求による損失と、過誤請求による返戻リスクが同居しています。
-                    </p>
-                </div>
-                <div class="problem-card reveal" style="transition-delay: 0.2s;">
-                    <span class="card-icon">03 / Human Resources</span>
-                    <h3 class="card-title">専門職の疲弊と離職</h3>
-                    <p class="card-text">
-                        「書類を作るための残業」が常態化。本来のケアに向き合えない環境が、採用難と早期離職の悪循環を生んでいます。
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="solution" class="section-padding solution">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-label">Our Solution</span>
-                <h2 class="section-title">CareNexus AI<br><span style="font-size:0.7em; font-weight:400; font-family:var(--font-serif);">The Clinical Governance OS</span></h2>
-                <p class="section-desc">訪問看護経営のための、監査に耐えうる意思決定支援システム</p>
-            </div>
-            
-            <div class="feature-list">
-                <div class="feature-item reveal">
-                    <div class="feature-meta">
-                        <span class="feature-num">01</span>
-                        <span class="feature-name">CONTEXT AWARE DOCUMENTATION</span>
-                    </div>
-                    <div class="feature-content">
-                        <h3>音声・メモからの構造化データ生成</h3>
-                        <p>AIは「書く代行」をするだけではありません。非構造化データを医療用語・介護報酬体系に即した形式へ変換し、多職種連携と監査に必要な「記録」として定着させます。</p>
-                    </div>
-                </div>
-                <div class="feature-item reveal">
-                    <div class="feature-meta">
-                        <span class="feature-num">02</span>
-                        <span class="feature-name">REGULATORY NAVIGATION</span>
-                    </div>
-                    <div class="feature-content">
-                        <h3>報酬算定・請求の適正化</h3>
-                        <p>記録内容に基づき、算定可能な加算をリアルタイムで示唆。取りこぼしを防ぐだけでなく、要件を満たさない過剰請求リスク（返戻・指導対象）を未然に検知・警告します。</p>
-                    </div>
-                </div>
-                <div class="feature-item reveal">
-                    <div class="feature-meta">
-                        <span class="feature-num">03</span>
-                        <span class="feature-name">RESOURCE OPTIMIZATION</span>
-                    </div>
-                    <div class="feature-content">
-                        <h3>人的資本の最大化</h3>
-                        <p>移動時間、記録時間、訪問時間の偏りを可視化。「採用難」と嘆く前に、既存リソースの稼働を最適化し、医療職が疲弊しない勤務体制をデータから導き出します。</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="governance" class="section-padding governance">
-        <div class="container">
-            <div class="gov-layout">
-                <div class="gov-text reveal">
-                    <span class="section-label">Core Stance</span>
-                    <h2 class="section-title" style="margin-bottom:24px;">We Keep Humans in the Loop.<br><span style="font-size:0.6em; color:var(--c-text-muted);">AIは判断しない。提案するだけである。</span></h2>
-                    <p style="margin-bottom:24px; color:var(--c-text-muted);">
-                        CareNexusの設計思想は、医療者の専門性を代替することではありません。
-                        最終的な臨床判断、記録の承認、請求の確定。これら全てのプロセスにおいて、必ず有資格者による「承認（Sign-off）」を必須とするワークフローを構築しています。
-                    </p>
-                    <p style="color:var(--c-text-muted);">
-                        ブラックボックス化した自動化は、医療安全と監査の敵です。
-                        私たちは、いつ、誰が、何を根拠に判断したかを追跡可能（Traceable）にします。
-                    </p>
-                </div>
-                <div class="gov-visual reveal">
-                    <span class="ui-badge">AUDIT LOG PREVIEW</span>
-                    <div class="ui-text">2024-05-20 14:30:22 [SYS] Context Analysis Complete</div>
-                    <div class="ui-text">2024-05-20 14:30:25 [USR] Nurse Suzuki Checked : Approved</div>
-                    <div class="ui-line"></div>
-                    <div class="ui-text" style="color:var(--c-primary); font-weight:700;">> TIMESTAMP VERIFIED</div>
-                    <div class="ui-text" style="color:var(--c-primary); font-weight:700;">> HASH: 8a7d...3f29 (Immutable)</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="contact" class="section-padding text-center" style="background:#fff;">
-        <div class="container">
-            <h2 class="section-title reveal">地域医療の「善意」を<br>「持続可能なシステム」へ。</h2>
-            <p class="reveal" style="max-width:600px; margin:24px auto; color:var(--c-text-muted);">
-                正しいケアが正しく評価され、法的に守られる仕組みこそが、次の世代に医療を残す唯一の解です。<br>
-                CareNexusは、そのための制度インフラとなります。
+    <section id="contact" style="padding: 100px 0;">
+        <div class="container text-center reveal">
+            <h2 style="font-size: 32px; margin-bottom: 24px;">持続可能な地域医療の<br>「社会インフラ」へ。</h2>
+            <p style="max-width: 600px; margin: 0 auto 40px auto;">
+                CareNexusは、慶應義塾大学発の研究成果を社会実装し、<br>
+                日本の医療制度を内側から支えるテクノロジー企業です。<br>
+                医療法人様の実証導入、自治体・企業様との連携をお待ちしております。
             </p>
-            <div class="reveal" style="margin-top:40px;">
-                <a href="#" class="btn btn-primary">お問い合わせ・導入相談</a>
+            <div class="flex" style="justify-content: center; gap: 20px;">
+                <a href="#" class="btn btn-primary">導入に関するお問い合わせ</a>
+                <a href="#" class="btn">提携・出資に関するお問い合わせ</a>
             </div>
         </div>
     </section>
 
-    <footer class="footer">
+    <footer>
         <div class="container">
             <div class="footer-grid">
-                <div class="footer-info">
-                    <h4>CareNexus</h4>
-                    <p style="font-size:13px; color:#94A3B8; line-height:1.6;">
-                        医療×データ×AI Reg-Tech Startup<br>
-                        東京都文京区本郷 XX-XX（東大アントレプレナーラボ）<br>
-                        ISO 27001 (ISMS) 取得予定
-                    </p>
+                <div>
+                    <span class="logo">CareNexus</span>
+                    <div class="company-meta">
+                        CareNexus Inc. (Keio University Startup)<br>
+                        〒113-0033 東京都文京区本郷 XX-XX<br>
+                        東大アントレプレナーラボ / 慶應義塾大学 共同研究拠点
+                    </div>
                 </div>
-                <div class="footer-links">
-                    <h5>Product</h5>
-                    <ul>
+                <div>
+                    <span class="mono" style="color: var(--c-text-gray); display: block; margin-bottom: 16px;">PRODUCT</span>
+                    <ul style="font-size: 14px; line-height: 2; color: var(--c-text-gray);">
                         <li><a href="#">CareNexus AI</a></li>
-                        <li><a href="#">Security</a></li>
-                        <li><a href="#">Roadmap</a></li>
+                        <li><a href="#">Security & Compliance</a></li>
+                        <li><a href="#">Case Studies</a></li>
                     </ul>
                 </div>
-                <div class="footer-links">
-                    <h5>Company</h5>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Team</a></li>
-                        <li><a href="#">Careers</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h5>Legal</h5>
-                    <ul>
+                <div>
+                    <span class="mono" style="color: var(--c-text-gray); display: block; margin-bottom: 16px;">LEGAL</span>
+                    <ul style="font-size: 14px; line-height: 2; color: var(--c-text-gray);">
                         <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Compliance</a></li>
+                        <li><a href="#">Information Security</a></li>
+                        <li><a href="#">Company Profile</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="copyright">
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.3);">
                 &copy; 2024 CareNexus Inc. All Rights Reserved.
             </div>
         </div>
@@ -676,23 +402,15 @@
     <script>
         // Simple Intersection Observer for scroll animations
         document.addEventListener('DOMContentLoaded', () => {
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.1
-            };
-
-            const observer = new IntersectionObserver((entries, observer) => {
+            const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('active');
-                        observer.unobserve(entry.target); // Play once
                     }
                 });
-            }, observerOptions);
+            }, { threshold: 0.1 });
 
-            const reveals = document.querySelectorAll('.reveal');
-            reveals.forEach(el => observer.observe(el));
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
         });
     </script>
 </body>
